@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {testApi} from '../apirequests'
+import {getBasicQuadraticApi, sendBasicQuadraticWorksheetApi} from '../apirequests'
 
 export class Quadratic extends React.Component<any, {equation: QuadraticEquation, firstEnteredAnswer: string | null, secondEnteredAnswer: string | null, isUserCorrect: boolean | null}> {
   constructor(props: any) {
@@ -39,11 +39,12 @@ export class Quadratic extends React.Component<any, {equation: QuadraticEquation
         <div>
           {parsePolynomial(this.state.equation.coefficients)}
         </div>
-        <button onClick={() => {testApi().then(result => this.setState({equation: result}))}}>New Equation</button>
+        <button onClick={() => {getBasicQuadraticApi().then(result => this.setState({equation: result}))}}>New Equation</button>
         <p>First: <input value={this.state.firstEnteredAnswer === null ? "" : this.state.firstEnteredAnswer} onChange={this.handleInputChange(1)}/></p>
         <p>Second: <input value={this.state.secondEnteredAnswer === null ? "" : this.state.secondEnteredAnswer} onChange={this.handleInputChange(2)}/></p>
         <p>Right Answer?: {displayResult(this.state.isUserCorrect)}</p>
         <button onClick={this.checkAnswer}>Check Answer</button>
+        <button onClick={sendBasicQuadraticWorksheetApi}>Email Worksheet</button>
       </div>
     )
   }

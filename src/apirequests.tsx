@@ -3,7 +3,7 @@ export interface QuadraticCoefficientsAndSolution {
   solutions: number[]
 }
 
-export const testApi = () =>
+export const getBasicQuadraticApi = () =>
 fetch('http://localhost:53132/api/QuadraticEquation')
   .then( response => {
       if (response.status !== 200) {
@@ -15,3 +15,24 @@ fetch('http://localhost:53132/api/QuadraticEquation')
     }
   )
   .catch(err => console.log('Fetch Error :-S', err));
+
+export const sendBasicQuadraticWorksheetApi = () =>
+fetch('http://localhost:53132/api/worksheet/defaultQuadraticEquations',
+{
+  method: 'POST',
+  body: JSON.stringify({'emailAddress': 'bickersjamie@googlemail.com'}),
+  headers: {
+  'Accept': 'application/json',
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*'
+  },
+})
+  .then( response => {
+      if (response.status !== 200) {
+        console.log('Looks like there was a problem. Status Code: ' +
+          response.status);
+        return;
+      }
+      return response.json();
+    }
+  )
