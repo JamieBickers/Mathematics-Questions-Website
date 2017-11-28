@@ -1,13 +1,13 @@
 import * as React from 'react';
 import {getBasicQuadraticApi, sendBasicQuadraticWorksheetApi} from '../apirequests'
 
-export class Quadratic extends React.Component<any, {equation: QuadraticEquation, firstEnteredAnswer: string | null, secondEnteredAnswer: string | null, isUserCorrect: boolean | null}> {
+export class Quadratic extends React.Component<any, {equation: QuadraticEquation, firstEnteredAnswer: string | null, secondEnteredAnswer: string | null, isUserCorrect: boolean | null, emailAddress: string}> {
   constructor(props: any) {
     super(props);
-    this.state = {equation: {coefficients: [1,2,3], roots: [4,5]}, firstEnteredAnswer: null, secondEnteredAnswer: null, isUserCorrect: null};
+    this.state = {equation: {coefficients: [1,2,3], roots: [4,5]}, firstEnteredAnswer: null, secondEnteredAnswer: null, isUserCorrect: null, emailAddress: ""};
   }
 
-  handleInputChange = (inputNumber: number) => (event: any) => {
+  handleAnswerInputChange = (inputNumber: number) => (event: any) => {
     if (inputNumber === 1) {
     this.setState({firstEnteredAnswer: event.target.value})
     }
@@ -16,15 +16,13 @@ export class Quadratic extends React.Component<any, {equation: QuadraticEquation
     }
   }
 
+  handleEmailAddressChange = (event: any) =>
+    this.setState({emailAddress: event.target.value})
+
   checkAnswer = ():void => {
     if (this.state.firstEnteredAnswer === null || this.state.secondEnteredAnswer === null) {
       this.setState({isUserCorrect: false})
     }
-
-    console.log(Math.round(this.state.equation.roots[0] * 100) / 100);
-    console.log(Math.round(this.state.equation.roots[1] * 100) / 100);
-    console.log(Number(this.state.firstEnteredAnswer));
-    console.log(Number(this.state.secondEnteredAnswer));
 
     const firstCorrect = (Number(this.state.firstEnteredAnswer) - (Math.round(this.state.equation.roots[0] * 100) / 100)) < 0.001;
     const secondCorrect = (Number(this.state.secondEnteredAnswer) - (Math.round(this.state.equation.roots[1] * 100) / 100)) < 0.001;
@@ -40,11 +38,14 @@ export class Quadratic extends React.Component<any, {equation: QuadraticEquation
           {parsePolynomial(this.state.equation.coefficients)}
         </div>
         <button onClick={() => {getBasicQuadraticApi().then(result => this.setState({equation: result}))}}>New Equation</button>
-        <p>First: <input value={this.state.firstEnteredAnswer === null ? "" : this.state.firstEnteredAnswer} onChange={this.handleInputChange(1)}/></p>
-        <p>Second: <input value={this.state.secondEnteredAnswer === null ? "" : this.state.secondEnteredAnswer} onChange={this.handleInputChange(2)}/></p>
+        <p>First: <input onChange={this.handleAnswerInputChange(1)}/></p>
+        <p>Second: <input onChange={this.handleAnswerInputChange(2)}/></p>
         <p>Right Answer?: {displayResult(this.state.isUserCorrect)}</p>
         <button onClick={this.checkAnswer}>Check Answer</button>
-        <button onClick={sendBasicQuadraticWorksheetApi}>Email Worksheet</button>
+        <div>
+          <button onClick={sendBasicQuadraticWorksheetApi(this.state.emailAddress, 12)}>Email Worksheet</button>
+        </div>
+        <input onClick={this.handleEmailAddressChange}/>
       </div>
     )
   }
