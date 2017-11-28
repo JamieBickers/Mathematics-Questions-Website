@@ -20,7 +20,7 @@ export const sendBasicQuadraticWorksheetApi = () =>
 fetch('http://localhost:53132/api/worksheet/defaultQuadraticEquations',
 {
   method: 'POST',
-  body: JSON.stringify({'emailAddress': 'bickersjamie@googlemail.com'}),
+  body: JSON.stringify({emailAddress: 'bickersjamie@googlemail.com', numberOfQuestions: 12}),
   headers: {
   'Accept': 'application/json',
   'Content-Type': 'application/json',
