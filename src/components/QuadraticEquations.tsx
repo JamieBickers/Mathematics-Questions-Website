@@ -1,10 +1,13 @@
 import * as React from 'react';
 import {getBasicQuadraticApi, sendBasicQuadraticWorksheetApi} from '../apirequests'
+import {EmailWorksheet} from './EmailWorksheet'
 
-export class Quadratic extends React.Component<any, {equation: QuadraticEquation, firstEnteredAnswer: string | null, secondEnteredAnswer: string | null, isUserCorrect: boolean | null, emailAddress: string}> {
+export class Quadratic extends React.Component<any, {equation: QuadraticEquation, firstEnteredAnswer: string | null, secondEnteredAnswer: string | null,
+  isUserCorrect: boolean | null, emailAddress: string, numberOfQuestions: string}> {
   constructor(props: any) {
     super(props);
-    this.state = {equation: {coefficients: [1,2,3], roots: [4,5]}, firstEnteredAnswer: null, secondEnteredAnswer: null, isUserCorrect: null, emailAddress: ""};
+    this.state = {equation: {coefficients: [1,2,3], roots: [4,5]}, firstEnteredAnswer: null, secondEnteredAnswer: null,
+    isUserCorrect: null, emailAddress: "", numberOfQuestions: ""};
   }
 
   handleAnswerInputChange = (inputNumber: number) => (event: any) => {
@@ -18,6 +21,9 @@ export class Quadratic extends React.Component<any, {equation: QuadraticEquation
 
   handleEmailAddressChange = (event: any) =>
     this.setState({emailAddress: event.target.value})
+
+    handleNumberOfQuestionsChange = (event: any) =>
+    this.setState({numberOfQuestions: event.target.value})
 
   checkAnswer = ():void => {
     if (this.state.firstEnteredAnswer === null || this.state.secondEnteredAnswer === null) {
@@ -42,18 +48,14 @@ export class Quadratic extends React.Component<any, {equation: QuadraticEquation
         <p>Second: <input onChange={this.handleAnswerInputChange(2)}/></p>
         <p>Right Answer?: {displayResult(this.state.isUserCorrect)}</p>
         <button onClick={this.checkAnswer}>Check Answer</button>
-        <div>
-          <button onClick={sendBasicQuadraticWorksheetApi(this.state.emailAddress, 12)}>Email Worksheet</button>
-        </div>
-        <input onClick={this.handleEmailAddressChange}/>
+        <EmailWorksheet apiCall={sendBasicQuadraticWorksheetApi} />
       </div>
     )
   }
 }
 
-export const parsePolynomial = (coefficients: number[]) => {
-  return `${coefficients[0]}x^2+${coefficients[1]}x+${coefficients[2]}=0`;
-}
+export const parsePolynomial = (coefficients: number[]) =>
+  `${coefficients[0]}x^2+${coefficients[1]}x+${coefficients[2]}=0`;
 
 interface QuadraticEquation {
   coefficients: number[],

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Quadratic} from './QuadraticEquations';
 import {Home} from './Home';
-import {SimultaneousEquations} from './SimultaneousEquations';
+import {Simultaneous} from './SimultaneousEquations';
 import {
   BrowserRouter as Router,
   Link,
@@ -17,10 +17,7 @@ export const Menu = () =>
         <li><Link to="/simultaneousEquations">Simultaneous Equations</Link></li>
       </ul>
       <Route exact path="/"  component={Home}/>
-      <Route path="/quadraticEquations" component={tempquad} />
-      <Route path="/simultaneousEquations" component={SimultaneousEquations}/>
+      <Route path="/quadraticEquations" component={Quadratic} />
+      <Route path="/simultaneousEquations" component={Simultaneous}/>
     </div>
   </Router>
-
-const tempquad = () =>
-  <Quadratic />
