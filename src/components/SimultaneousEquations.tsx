@@ -2,13 +2,13 @@ import * as React from 'react';
 import {getBasicSimultaneousApi, sendBasicSimultaneousEquationsWorksheetApi} from '../apirequests'
 import {EmailWorksheet} from './EmailWorksheet'
 
-export class Simultaneous extends React.Component<any, {equation: SimultaneousEquations, enteredXValue: string | null, enteredYValue: string | null,
-  isUserCorrect: boolean | null, emailAddress: string, numberOfQuestions: string}> {
+export class Simultaneous extends React.Component<any, {equation: SimultaneousEquations, enteredXValue: string, enteredYValue: string,
+  enteredInfiniteSolutions: boolean, enteredNoSolutions: boolean, isUserCorrect: boolean | null, emailAddress: string, numberOfQuestions: string}> {
   constructor(props: any) {
     super(props);
     this.state = {equation: {coefficients: [{xTerm: 1, yTerm: 2, constantTerm: 3}, {xTerm: 4, yTerm: 5, constantTerm: 6}],
-    solution: {firstSolution: 7, secondSolution: 8, noSolution: false, infiniteSolutions: false}}, enteredXValue: null, enteredYValue: null,
-    isUserCorrect: null, emailAddress: "", numberOfQuestions: ""};
+    solution: {firstSolution: 7, secondSolution: 8, noSolution: false, infiniteSolutions: false}}, enteredXValue: "", enteredYValue: "",
+    enteredInfiniteSolutions: false, enteredNoSolutions: false, isUserCorrect: null, emailAddress: "", numberOfQuestions: ""};
   }
 
   handleAnswerInputChange = (inputNumber: number) => (event: any) => {
@@ -20,15 +20,20 @@ export class Simultaneous extends React.Component<any, {equation: SimultaneousEq
     }
   }
 
-  checkAnswer = ():void => {
-    if (this.state.enteredXValue === null || this.state.enteredYValue === null) {
-      this.setState({isUserCorrect: false})
+  handleCheckboxChange = (checkboxType: string) => (event: any) => {
+    if (checkboxType === "no") {
+      this.setState({enteredNoSolutions: !event.target.value})
     }
+    else if (checkboxType === "infinite") {
+      this.setState({enteredInfiniteSolutions: !event.target.value})
+    }
+  }
 
-    const xCorrect = (Number(this.state.enteredXValue) - (Math.round(this.state.equation.solution.firstSolution * 100) / 100)) < 0.001;
-    const yCorrect = (Number(this.state.enteredYValue) - (Math.round(this.state.equation.solution.secondSolution * 100) / 100)) < 0.001;
-    const noSolutionCorrect = true; //TODO
-    const infiniteSolutionsCorrect = true; //TODO
+  checkAnswer = () => {
+    const xCorrect = Math.abs(Number(this.state.enteredXValue) - (Math.round(this.state.equation.solution.firstSolution * 100) / 100)) < 0.001;
+    const yCorrect = Math.abs(Number(this.state.enteredYValue) - (Math.round(this.state.equation.solution.secondSolution * 100) / 100)) < 0.001;
+    const noSolutionCorrect = this.state.enteredNoSolutions;
+    const infiniteSolutionsCorrect = this.state.enteredInfiniteSolutions;
 
     const correctAnswer = (xCorrect && yCorrect) || noSolutionCorrect || infiniteSolutionsCorrect;
 
@@ -47,6 +52,10 @@ export class Simultaneous extends React.Component<any, {equation: SimultaneousEq
         <button onClick={() => {getBasicSimultaneousApi().then(result => this.setState({equation: result}))}}>New Equation</button>
         <p>First: <input onChange={this.handleAnswerInputChange(1)}/></p>
         <p>Second: <input onChange={this.handleAnswerInputChange(2)}/></p>
+        <div>
+          <p>Infinite Solutions? <input type='checkbox' onClick={this.handleCheckboxChange("infinite")} /></p>
+          <p>No Solutions? <input type='checkbox' onClick={this.handleCheckboxChange("no")} /></p>
+        </div>
         <p>Right Answer?: {displayResult(this.state.isUserCorrect)}</p>
         <button onClick={this.checkAnswer}>Check Answer</button>
         <EmailWorksheet apiCall={sendBasicSimultaneousEquationsWorksheetApi}/>

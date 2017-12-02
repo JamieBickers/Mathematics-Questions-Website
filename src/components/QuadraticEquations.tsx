@@ -19,12 +19,6 @@ export class Quadratic extends React.Component<any, {equation: QuadraticEquation
     }
   }
 
-  handleEmailAddressChange = (event: any) =>
-    this.setState({emailAddress: event.target.value})
-
-    handleNumberOfQuestionsChange = (event: any) =>
-    this.setState({numberOfQuestions: event.target.value})
-
   checkAnswer = ():void => {
     if (this.state.firstEnteredAnswer === null || this.state.secondEnteredAnswer === null) {
       this.setState({isUserCorrect: false})
