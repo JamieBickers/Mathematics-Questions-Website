@@ -10,8 +10,10 @@ export class SendAllWorksheets extends React.Component<void, {emailAddress: stri
   handleEmailAddressChange = (event: any) =>
     this.setState({emailAddress: event.target.value})
 
-  sendWorksheets = (event: any) =>
+  sendWorksheets = (event: any) => {
+    console.log('email: ', this.state.emailAddress)
     sendAllWorksheets(this.state.emailAddress)
+  }
 
   render() {
     return (

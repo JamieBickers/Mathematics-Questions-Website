@@ -30,6 +30,10 @@ export class Simultaneous extends React.Component<any, {equation: SimultaneousEq
   }
 
   checkAnswer = () => {
+    if (this.state.equation == null) {
+      this.setState({isUserCorrect: false})
+      return
+    }
     const xCorrect = Math.abs(Number(this.state.enteredXValue) - (Math.round(this.state.equation.solution.firstSolution * 100) / 100)) < 0.001;
     const yCorrect = Math.abs(Number(this.state.enteredYValue) - (Math.round(this.state.equation.solution.secondSolution * 100) / 100)) < 0.001;
     const noSolutionCorrect = this.state.enteredNoSolutions;
@@ -44,10 +48,10 @@ export class Simultaneous extends React.Component<any, {equation: SimultaneousEq
     return (
       <div>
         <div>
-          {parseLinearEquation(this.state.equation.coefficients[0])}
+          {this.state.equation == null ? 'Connection error' : parseLinearEquation(this.state.equation.coefficients[0])}
         </div>
         <div>
-          {parseLinearEquation(this.state.equation.coefficients[1])}
+          {this.state.equation == null ? 'Connection error' : parseLinearEquation(this.state.equation.coefficients[1])}
         </div>
         <button onClick={() => {getBasicSimultaneousApi().then(result => this.setState({equation: result}))}}>New Equation</button>
         <p>First: <input onChange={this.handleAnswerInputChange(1)}/></p>
@@ -56,7 +60,7 @@ export class Simultaneous extends React.Component<any, {equation: SimultaneousEq
           <p>Infinite Solutions? <input type='checkbox' onClick={this.handleCheckboxChange("infinite")} /></p>
           <p>No Solutions? <input type='checkbox' onClick={this.handleCheckboxChange("no")} /></p>
         </div>
-        <p>Right Answer?: {displayResult(this.state.isUserCorrect)}</p>
+        <p>Right Answer?: {this.state.equation == null ? 'Connection error' : displayResult(this.state.isUserCorrect)}</p>
         <button onClick={this.checkAnswer}>Check Answer</button>
         <EmailWorksheet apiCall={sendBasicSimultaneousEquationsWorksheetApi}/>
       </div>

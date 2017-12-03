@@ -22,6 +22,11 @@ export class Quadratic extends React.Component<any, {equation: QuadraticEquation
   checkAnswer = ():void => {
     if (this.state.firstEnteredAnswer === null || this.state.secondEnteredAnswer === null) {
       this.setState({isUserCorrect: false})
+      return
+    }
+    else if (this.state.equation == null) {
+      this.setState({isUserCorrect: false})
+      return
     }
 
     const firstCorrect = (Number(this.state.firstEnteredAnswer) - (Math.round(this.state.equation.roots[0] * 100) / 100)) < 0.001;
@@ -35,12 +40,12 @@ export class Quadratic extends React.Component<any, {equation: QuadraticEquation
     return (
       <div>
         <div>
-          {parsePolynomial(this.state.equation.coefficients)}
+          {this.state.equation == null ? 'Connection error' : parsePolynomial(this.state.equation.coefficients)}
         </div>
         <button onClick={() => {getBasicQuadraticApi().then(result => this.setState({equation: result}))}}>New Equation</button>
         <p>First: <input onChange={this.handleAnswerInputChange(1)}/></p>
         <p>Second: <input onChange={this.handleAnswerInputChange(2)}/></p>
-        <p>Right Answer?: {displayResult(this.state.isUserCorrect)}</p>
+        <p>Right Answer?: {this.state.equation == null ? 'Connection error' : displayResult(this.state.isUserCorrect)}</p>
         <button onClick={this.checkAnswer}>Check Answer</button>
         <EmailWorksheet apiCall={sendBasicQuadraticWorksheetApi} />
       </div>

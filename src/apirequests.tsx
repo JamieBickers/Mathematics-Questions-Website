@@ -1,10 +1,13 @@
-//TODO: Refactor the common behaivor of these api functions once I have enough examples workig.
-
 export const sendBasicQuadraticWorksheetApi = (emailAddress: string, numberOfQuestions: number) =>
 sendBasicWorksheet('quadraticEquations', emailAddress, 12)
 
+export const getBasicQuadraticApi = () => standardGetRequest('QuadraticEquation');
+export const getBasicSimultaneousApi = () => standardGetRequest('SimultaneousEquations');
+
 export const sendBasicSimultaneousEquationsWorksheetApi = (emailAddress: string, numberOfQuestions: number) =>
 sendBasicWorksheet('simultaneousEquations', emailAddress, 12)
+
+//export const sendAllWorksheets = (emailAddress: string) => standardPostRequest('Worksheet/AllPreviousWorksheets', {address: emailAddress})
 
 export const sendAllWorksheets = (emailAddress: string) =>
 fetch(`http://localhost:53132/api/worksheet/allPreviousWorksheets`,
@@ -63,6 +66,3 @@ fetch(`http://localhost:53132/api/${urlTail}`,
       return response.json();
     }
   )
-
-export const getBasicQuadraticApi = () => standardGetRequest('QuadraticEquation');
-export const getBasicSimultaneousApi = () => standardGetRequest('SimultaneousEquations');
