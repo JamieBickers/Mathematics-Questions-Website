@@ -1,6 +1,11 @@
 import * as React from 'react';
+import styled from 'styled-components'
 
 export const Home = () =>
-  <div>
+  <Div>
     <p>Home page text here</p>
-  </div>
+  </Div>
+
+const Div = styled.div`
+    margin-left: 17%;
+  `

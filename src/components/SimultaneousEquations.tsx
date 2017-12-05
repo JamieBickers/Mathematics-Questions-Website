@@ -1,14 +1,16 @@
 import * as React from 'react';
 import {getBasicSimultaneousApi, sendBasicSimultaneousEquationsWorksheetApi} from '../apirequests'
 import {EmailWorksheet} from './EmailWorksheet'
+import styled from 'styled-components'
+import {Button, Input, FloatingDivWrapper, LeftFloatingDiv, RightFloatingDiv} from './StyledComponents'
 
-export class Simultaneous extends React.Component<any, {equation: SimultaneousEquations, enteredXValue: string, enteredYValue: string,
-  enteredInfiniteSolutions: boolean, enteredNoSolutions: boolean, isUserCorrect: boolean | null, emailAddress: string, numberOfQuestions: string}> {
+export class Simultaneous extends React.Component<any, {equation: SimultaneousEquations | null, enteredXValue: string, enteredYValue: string,
+  enteredSolutionType: string, isUserCorrect: boolean | null, emailAddress: string, numberOfQuestions: string}> {
   constructor(props: any) {
     super(props);
-    this.state = {equation: {coefficients: [{xTerm: 1, yTerm: 2, constantTerm: 3}, {xTerm: 4, yTerm: 5, constantTerm: 6}],
-    solution: {firstSolution: 7, secondSolution: 8, noSolution: false, infiniteSolutions: false}}, enteredXValue: "", enteredYValue: "",
-    enteredInfiniteSolutions: false, enteredNoSolutions: false, isUserCorrect: null, emailAddress: "", numberOfQuestions: ""};
+    this.state = {equation: null, enteredXValue: "", enteredYValue: "",
+    enteredSolutionType: "unique", isUserCorrect: null, emailAddress: "", numberOfQuestions: ""};
+    getBasicSimultaneousApi().then(result => this.setState({equation: result}));
   }
 
   handleAnswerInputChange = (inputNumber: number) => (event: any) => {
@@ -20,15 +22,6 @@ export class Simultaneous extends React.Component<any, {equation: SimultaneousEq
     }
   }
 
-  handleCheckboxChange = (checkboxType: string) => (event: any) => {
-    if (checkboxType === "no") {
-      this.setState({enteredNoSolutions: !event.target.value})
-    }
-    else if (checkboxType === "infinite") {
-      this.setState({enteredInfiniteSolutions: !event.target.value})
-    }
-  }
-
   checkAnswer = () => {
     if (this.state.equation == null) {
       this.setState({isUserCorrect: false})
@@ -36,40 +29,87 @@ export class Simultaneous extends React.Component<any, {equation: SimultaneousEq
     }
     const xCorrect = Math.abs(Number(this.state.enteredXValue) - (Math.round(this.state.equation.solution.firstSolution * 100) / 100)) < 0.001;
     const yCorrect = Math.abs(Number(this.state.enteredYValue) - (Math.round(this.state.equation.solution.secondSolution * 100) / 100)) < 0.001;
-    const noSolutionCorrect = this.state.enteredNoSolutions;
-    const infiniteSolutionsCorrect = this.state.enteredInfiniteSolutions;
+    const noSolutionCorrect = ((this.state.enteredSolutionType === 'no') && (this.state.equation.solution.noSolution));
+    const infiniteSolutionsCorrect = ((this.state.enteredSolutionType === 'infinite') && (this.state.equation.solution.infiniteSolutions));
 
     const correctAnswer = (xCorrect && yCorrect) || noSolutionCorrect || infiniteSolutionsCorrect;
 
     this.setState({isUserCorrect: correctAnswer});
   }
 
+  solutionTypeHandleChange = (event: any) =>
+  this.setState({enteredSolutionType: event.target.value})
+
   render () {
     return (
-      <div>
+      <Div>
+        <h4>Equations</h4>
+        <FloatingDivWrapper>
+          <LeftFloatingDiv>
+            <p>
+              {this.state.equation == null ? 'Connection error' : parseLinearEquation(this.state.equation.coefficients[0])}
+            </p>
+            <p>
+              {this.state.equation == null ? 'Connection error' : parseLinearEquation(this.state.equation.coefficients[1])}
+            </p>
+          </LeftFloatingDiv>
+          <RightFloatingDiv>
+            <CenteredDiv>
+              <br />
+              <Button onClick={() => {getBasicSimultaneousApi().then(result => this.setState({equation: result})),
+            this.setState({enteredSolutionType: 'unique', isUserCorrect: null})}}>New Equation</Button>
+            </CenteredDiv>
+          </RightFloatingDiv>
+        </FloatingDivWrapper>
+        <h3>Answers</h3>
+        <p>First: <Input onChange={this.handleAnswerInputChange(1)}/></p>
+        <p>Second: <Input onChange={this.handleAnswerInputChange(2)}/></p>
         <div>
-          {this.state.equation == null ? 'Connection error' : parseLinearEquation(this.state.equation.coefficients[0])}
-        </div>
-        <div>
-          {this.state.equation == null ? 'Connection error' : parseLinearEquation(this.state.equation.coefficients[1])}
-        </div>
-        <button onClick={() => {getBasicSimultaneousApi().then(result => this.setState({equation: result}))}}>New Equation</button>
-        <p>First: <input onChange={this.handleAnswerInputChange(1)}/></p>
-        <p>Second: <input onChange={this.handleAnswerInputChange(2)}/></p>
-        <div>
-          <p>Infinite Solutions? <input type='checkbox' onClick={this.handleCheckboxChange("infinite")} /></p>
-          <p>No Solutions? <input type='checkbox' onClick={this.handleCheckboxChange("no")} /></p>
+          <form>
+            <p>
+              <input type="radio" name='solutionType'
+              value="unique"
+              checked={this.state.enteredSolutionType == 'unique'}
+              onChange={this.solutionTypeHandleChange}/>
+              Unique Solution
+            </p>
+            <p>
+              <input type="radio"
+              name="solutionType"
+              value="infinite"
+              checked={this.state.enteredSolutionType == 'infinite'}
+              onChange={this.solutionTypeHandleChange}/>
+              Infinite Solutions
+            </p>
+            <p>
+              <input type="radio"
+              name="solutionType"
+              value="no"
+              checked={this.state.enteredSolutionType == 'no'}
+              onChange={this.solutionTypeHandleChange}/>
+              No Solutions
+            </p>
+          </form>
+
         </div>
         <p>Right Answer?: {this.state.equation == null ? 'Connection error' : displayResult(this.state.isUserCorrect)}</p>
-        <button onClick={this.checkAnswer}>Check Answer</button>
+        <Button onClick={this.checkAnswer}>Check Answer</Button>
         <EmailWorksheet apiCall={sendBasicSimultaneousEquationsWorksheetApi}/>
-      </div>
+      </Div>
     )
   }
 }
 
-export const parseLinearEquation = (coefficients: LinearEquation) =>
-  `${coefficients.xTerm}x+${coefficients.yTerm}y+${coefficients.constantTerm}=0`;
+const Div = styled.div`
+  margin-left: 17%;
+`
+const CenteredDiv = styled.div`
+  height: 100px;
+  align-items: center;
+`
+
+const parseLinearEquation = (coefficients: LinearEquation) =>
+  `${coefficients.xTerm}x+${coefficients.yTerm}y+${coefficients.constantTerm}=0`.replace('+-', '-');
 
 interface SimultaneousEquations {
   coefficients: LinearEquation[],

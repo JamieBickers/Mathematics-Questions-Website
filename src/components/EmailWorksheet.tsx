@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {Button, Input} from './StyledComponents'
 
 export class EmailWorksheet extends React.Component<{apiCall: (emailAddress: string, numberOfQuestions: number) => (() => Promise<any>)},
 {enteredEmailAddress: string, enteredNumberOfQuestions: number, emailSuccessfullySent: boolean | null}> {
@@ -24,11 +25,11 @@ export class EmailWorksheet extends React.Component<{apiCall: (emailAddress: str
     return (
       <div>
         <div>
-          <button onClick={this.handleSendEmail}>Email Worksheet</button>
+          <Button onClick={this.handleSendEmail}>Email Worksheet</Button>
         </div>
         <div>
-          <input placeholder={"Email Address"} onClick={this.handleEmailAddressChange} />
-          <input placeholder={"Number of Questions"} onClick={this.handleNumberOfQuestionsChange} />
+          <Input placeholder={"Email Address"} onClick={this.handleEmailAddressChange} />
+          <Input placeholder={"Number of Questions"} onClick={this.handleNumberOfQuestionsChange} />
         </div>
         <EmailSentValidator emailSent={this.state.emailSuccessfullySent}/>
       </div>

@@ -1,8 +1,10 @@
 import * as React from 'react';
 import {sendAllWorksheets} from '../apirequests';
+import styled from 'styled-components';
+import {Button, Input} from './StyledComponents'
 
-export class SendAllWorksheets extends React.Component<void, {emailAddress: string}> {
-  constructor(props: void) {
+export class SendAllWorksheets extends React.Component<any, {emailAddress: string}> {
+  constructor(props: any) {
     super(props);
     this.state = {emailAddress: ""}
   }
@@ -17,10 +19,17 @@ export class SendAllWorksheets extends React.Component<void, {emailAddress: stri
 
   render() {
     return (
-      <div>
-        <input onClick={this.handleEmailAddressChange} />
-        <button onClick={this.sendWorksheets}>Send Worksheets</button>
-      </div>
+      <Div>
+        <div>
+          Explanation Here
+        </div>
+        <Input onClick={this.handleEmailAddressChange} />
+        <Button onClick={this.sendWorksheets}>Send Worksheets</Button>
+      </Div>
     )
   }
 }
+
+const Div = styled.div`
+  margin-left: 17%;
+`

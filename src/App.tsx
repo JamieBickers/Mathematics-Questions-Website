@@ -2,18 +2,26 @@
 import * as React from 'react';
 import { Component } from 'react';
 import { Menu } from './components/Menu'
+import styled from 'styled-components'
+import {Title} from './components/StyledComponents'
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <div className="App-header">
-          <h2>Title Here</h2>
-        </div>
+      <Div>
+        <Div>
+          <Title>Title Here</Title>
+        </Div>
         <Menu />
-      </div>
+      </Div>
     );
   }
 }
 
 export default App;
+
+const Div = styled.div`
+  margin: 0px;
+  padding: 0px;
+  margin-top: 0px;
+`

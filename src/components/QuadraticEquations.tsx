@@ -1,13 +1,16 @@
 import * as React from 'react';
 import {getBasicQuadraticApi, sendBasicQuadraticWorksheetApi} from '../apirequests'
 import {EmailWorksheet} from './EmailWorksheet'
+import styled from 'styled-components'
+import {Button, Input, FloatingDivWrapper, LeftFloatingDiv, RightFloatingDiv} from './StyledComponents'
 
 export class Quadratic extends React.Component<any, {equation: QuadraticEquation, firstEnteredAnswer: string | null, secondEnteredAnswer: string | null,
   isUserCorrect: boolean | null, emailAddress: string, numberOfQuestions: string}> {
   constructor(props: any) {
     super(props);
-    this.state = {equation: {coefficients: [1,2,3], roots: [4,5]}, firstEnteredAnswer: null, secondEnteredAnswer: null,
+    this.state = {equation: {coefficients: [], roots: []}, firstEnteredAnswer: null, secondEnteredAnswer: null,
     isUserCorrect: null, emailAddress: "", numberOfQuestions: ""};
+    getBasicQuadraticApi().then(result => this.setState({equation: result}));
   }
 
   handleAnswerInputChange = (inputNumber: number) => (event: any) => {
@@ -38,23 +41,38 @@ export class Quadratic extends React.Component<any, {equation: QuadraticEquation
 
   render () {
     return (
-      <div>
+      <Div>
         <div>
-          {this.state.equation == null ? 'Connection error' : parsePolynomial(this.state.equation.coefficients)}
+          <h4>Equation</h4>
+          <FloatingDivWrapper>
+            <LeftFloatingDiv>
+              {this.state.equation == null ? 'Connection error' : parsePolynomial(this.state.equation.coefficients)}
+            </LeftFloatingDiv>
+            <RightFloatingDiv>
+              <Button onClick={() => {getBasicQuadraticApi().then(result => this.setState({equation: result})),
+              this.setState({isUserCorrect: null})}}>New Equation</Button>
+            </RightFloatingDiv>
+          </FloatingDivWrapper>
         </div>
-        <button onClick={() => {getBasicQuadraticApi().then(result => this.setState({equation: result}))}}>New Equation</button>
-        <p>First: <input onChange={this.handleAnswerInputChange(1)}/></p>
-        <p>Second: <input onChange={this.handleAnswerInputChange(2)}/></p>
+        <h4>Answers</h4>
+        <p>First: <Input onChange={this.handleAnswerInputChange(1)}/></p>
+        <p>Second: <Input onChange={this.handleAnswerInputChange(2)}/></p>
         <p>Right Answer?: {this.state.equation == null ? 'Connection error' : displayResult(this.state.isUserCorrect)}</p>
-        <button onClick={this.checkAnswer}>Check Answer</button>
+        <Button onClick={this.checkAnswer}>Check Answer</Button>
         <EmailWorksheet apiCall={sendBasicQuadraticWorksheetApi} />
-      </div>
+      </Div>
     )
   }
 }
 
-export const parsePolynomial = (coefficients: number[]) =>
-  `${coefficients[0]}x^2+${coefficients[1]}x+${coefficients[2]}=0`;
+const Div = styled.div`
+  margin-left: 17%;
+`
+
+const parsePolynomial = (coefficients: number[]) =>
+  coefficients.length == 3 ?
+  <p>{coefficients[0]}x<sup>2</sup>{coefficients[1] > 0 ? '+' : ''}{coefficients[1]}x{coefficients[2] > 0 ? '+' : ''}{coefficients[2]}=0</p>
+  : 'Connection error';
 
 interface QuadraticEquation {
   coefficients: number[],
