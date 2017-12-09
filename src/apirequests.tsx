@@ -7,10 +7,10 @@ export const getBasicSimultaneousApi = () => standardGetRequest('SimultaneousEqu
 export const sendBasicSimultaneousEquationsWorksheetApi = (emailAddress: string, numberOfQuestions: number) =>
 sendBasicWorksheet('simultaneousEquations', emailAddress, 12)
 
-//export const sendAllWorksheets = (emailAddress: string) => standardPostRequest('Worksheet/AllPreviousWorksheets', {address: emailAddress})
+const url = 'http://mathematicsquestiongeneratorapi.azurewebsites.net'
 
 export const sendAllWorksheets = (emailAddress: string) =>
-fetch(`http://localhost:53132/api/worksheet/allPreviousWorksheets`,
+fetch(`${url}/api/worksheet/allPreviousWorksheets`,
 {
   method: 'POST',
   body: JSON.stringify({address: emailAddress}),
@@ -34,7 +34,7 @@ const sendBasicWorksheet = (worksheetType: string, emailAddress: string, numberO
 standardPostRequest(`worksheet/default${worksheetType}`, {emailAddress: {address: emailAddress}, numberOfQuestions: numberOfQuestions});
 
 const standardGetRequest = (urlTail: string) =>
-fetch(`http://localhost:53132/api/${urlTail}`)
+fetch(`${url}/api/${urlTail}`)
   .then( response => {
       if (response.status !== 200) {
         console.log('Looks like there was a problem. Status Code: ' +
@@ -47,7 +47,7 @@ fetch(`http://localhost:53132/api/${urlTail}`)
   .catch(err => console.log('Fetch Error :-S', err));
 
 const standardPostRequest = (urlTail: string, jsonBody: any) =>
-fetch(`http://localhost:53132/api/${urlTail}`,
+fetch(`${url}/api/${urlTail}`,
 {
   method: 'POST',
   body: JSON.stringify(jsonBody),

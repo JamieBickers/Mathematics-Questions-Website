@@ -5,11 +5,11 @@ import styled from 'styled-components'
 import {Button, Input, FloatingDivWrapper, LeftFloatingDiv, RightFloatingDiv} from './StyledComponents'
 
 export class Quadratic extends React.Component<any, {equation: QuadraticEquation, firstEnteredAnswer: string | null, secondEnteredAnswer: string | null,
-  isUserCorrect: boolean | null, emailAddress: string, numberOfQuestions: string}> {
+  isUserCorrect: boolean | null, emailAddress: string, numberOfQuestions: string, enteredNoSolutions: boolean | null}> {
   constructor(props: any) {
     super(props);
     this.state = {equation: {coefficients: [], roots: []}, firstEnteredAnswer: null, secondEnteredAnswer: null,
-    isUserCorrect: null, emailAddress: "", numberOfQuestions: ""};
+    isUserCorrect: null, emailAddress: "", numberOfQuestions: "", enteredNoSolutions: null};
     getBasicQuadraticApi().then(result => this.setState({equation: result}));
   }
 
@@ -22,8 +22,8 @@ export class Quadratic extends React.Component<any, {equation: QuadraticEquation
     }
   }
 
-  checkAnswer = ():void => {
-    if (this.state.firstEnteredAnswer === null || this.state.secondEnteredAnswer === null) {
+  checkAnswer = () => {
+    if ((this.state.firstEnteredAnswer === null || this.state.secondEnteredAnswer === null) && (this.state.enteredNoSolutions !== false)) {
       this.setState({isUserCorrect: false})
       return
     }
@@ -34,10 +34,16 @@ export class Quadratic extends React.Component<any, {equation: QuadraticEquation
 
     const firstCorrect = (Number(this.state.firstEnteredAnswer) - (Math.round(this.state.equation.roots[0] * 100) / 100)) < 0.001;
     const secondCorrect = (Number(this.state.secondEnteredAnswer) - (Math.round(this.state.equation.roots[1] * 100) / 100)) < 0.001;
-    const bothCorrect = firstCorrect && secondCorrect;
+    const noSolutionCorrect = (isNaN(this.state.equation.roots[0])) && this.state.enteredNoSolutions
+    const allCorrect = (firstCorrect && secondCorrect) || noSolutionCorrect;
 
-    this.setState({isUserCorrect: bothCorrect});
+    console.log(firstCorrect, secondCorrect, noSolutionCorrect, allCorrect);
+
+    this.setState({isUserCorrect: allCorrect});
   }
+
+  handleNoSolutionChange = (event: any) =>
+    this.setState({enteredNoSolutions: event.target.value})
 
   render () {
     return (
@@ -55,8 +61,9 @@ export class Quadratic extends React.Component<any, {equation: QuadraticEquation
           </FloatingDivWrapper>
         </div>
         <h4>Answers</h4>
-        <p>First: <Input onChange={this.handleAnswerInputChange(1)}/></p>
+        <p>First: &nbsp;&nbsp;&nbsp; <Input onChange={this.handleAnswerInputChange(1)}/></p>
         <p>Second: <Input onChange={this.handleAnswerInputChange(2)}/></p>
+        <p>No solution: <Input type={'checkbox'} onChange={this.handleNoSolutionChange}/></p>
         <p>Right Answer?: {this.state.equation == null ? 'Connection error' : displayResult(this.state.isUserCorrect)}</p>
         <Button onClick={this.checkAnswer}>Check Answer</Button>
         <EmailWorksheet apiCall={sendBasicQuadraticWorksheetApi} />

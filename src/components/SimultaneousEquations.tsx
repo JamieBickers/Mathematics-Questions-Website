@@ -62,8 +62,8 @@ export class Simultaneous extends React.Component<any, {equation: SimultaneousEq
           </RightFloatingDiv>
         </FloatingDivWrapper>
         <h3>Answers</h3>
-        <p>First: <Input onChange={this.handleAnswerInputChange(1)}/></p>
-        <p>Second: <Input onChange={this.handleAnswerInputChange(2)}/></p>
+        <p>First:&nbsp;&nbsp;&nbsp;&nbsp; <Input onChange={this.handleAnswerInputChange(1)} disabled={this.state.enteredSolutionType == 'no'}/></p>
+        <p>Second: <Input onChange={this.handleAnswerInputChange(2)} disabled={this.state.enteredSolutionType == 'no'}/></p>
         <div>
           <form>
             <p>
@@ -109,7 +109,7 @@ const CenteredDiv = styled.div`
 `
 
 const parseLinearEquation = (coefficients: LinearEquation) =>
-  `${coefficients.xTerm}x+${coefficients.yTerm}y+${coefficients.constantTerm}=0`.replace('+-', '-');
+  `${coefficients.xTerm}x+${coefficients.yTerm}y=${coefficients.constantTerm * -1}`.replace('+-', '-');
 
 interface SimultaneousEquations {
   coefficients: LinearEquation[],
